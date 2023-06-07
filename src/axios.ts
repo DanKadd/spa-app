@@ -1,9 +1,11 @@
 import axios from 'axios';
 
+const token = localStorage.getItem('token');
+
 const instance = axios.create({
   headers: {
     'Content-Type': 'application/json',
-    'x-auth': localStorage.getItem('token')
+    'x-auth': token
   },
   baseURL: process.env.REACT_APP_URI,
 });

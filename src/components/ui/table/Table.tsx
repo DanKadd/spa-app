@@ -1,21 +1,20 @@
 import React, {FC} from 'react';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import { TypeTable } from '../../../types/table.type';
 
 type TypeTableRows = {
   data: TypeTable[]
 }
 
-const columns: GridColDef[] = [
-  { field: 'companySigDate', headerName: 'Дата 1', width: 200 },
-  { field: 'companySignatureName', headerName: 'Название компании', width: 200 },
-  { field: 'documentName', headerName: 'Название документа', width: 200 },
-  { field: 'documentStatus', headerName: 'Статус', width: 150 },
-  { field: 'documentType', headerName: 'Тип договора', width: 200 },
-  { field: 'employeeNumber', headerName: 'Номер работника', width: 100 },
-  { field: 'employeeSigDate', headerName: 'Дата 2', width: 200 },
-  { field: 'employeeSignatureName', headerName: 'Название работника', width: 200 },
-];
+// const columns: GridColDef[] = [
+//   { field: 'companySigDate', headerName: 'Дата 1', width: 200 },
+//   { field: 'companySignatureName', headerName: 'Название компании', width: 200 },
+//   { field: 'documentName', headerName: 'Название документа', width: 200 },
+//   { field: 'documentStatus', headerName: 'Статус', width: 150 },
+//   { field: 'documentType', headerName: 'Тип договора', width: 200 },
+//   { field: 'employeeNumber', headerName: 'Номер работника', width: 100 },
+//   { field: 'employeeSigDate', headerName: 'Дата 2', width: 200 },
+//   { field: 'employeeSignatureName', headerName: 'Название работника', width: 200 },
+// ];
 
 const rows = [
   { id: 1, lastName: 'Snow', firstName: 'Jon', age: 35 },
@@ -33,17 +32,16 @@ const DataTable:FC<TypeTableRows> = ({data}) => {
   console.log(data)
   return (
     <div style={{ height: '100%', width: '100%' }}>
-      <DataGrid
-        rows={data}
+      {/* <DataGrid
         columns={columns}
+        rows={data}
         initialState={{
           pagination: {
             paginationModel: { page: 0, pageSize: 15 },
           },
         }}
         pageSizeOptions={[5, 10]}
-        checkboxSelection
-      />
+      /> */}
     </div>
   );
 }

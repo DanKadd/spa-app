@@ -3,15 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { isAuth } from '../services/isAuth';
 import { TypeUser } from '../types/user.type';
 
-type TypeContext = {
+type TypeTokenUser = {
+  token: string
+}
+
+type TypeAuthContext = {
   user: TypeUser,
   setUser: Dispatch<SetStateAction<TypeUser>>,
   logout: () => void,
   login: (data: TypeTokenUser) => void
-}
-
-type TypeTokenUser = {
-  token: string
 }
 
 export const defaultValueUser: TypeUser = {
@@ -20,7 +20,7 @@ export const defaultValueUser: TypeUser = {
   user: isAuth()
 }
 
-export const AuthContext = createContext<TypeContext>({
+export const AuthContext = createContext<TypeAuthContext>({
   user: defaultValueUser,
   setUser: () => {},
   logout: () => {},

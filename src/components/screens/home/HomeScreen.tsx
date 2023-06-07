@@ -17,6 +17,7 @@ const HomeScreen = () => {
     }
     getItems();
   }, [])
+  
   return (
     <Layout>
       <Typography component='h2' variant='h5' sx={{marginBottom: '15px'}}>Табличные данные</Typography>
