@@ -3,7 +3,6 @@ import {Box, Button, Container, TextField, Typography} from '@mui/material';
 import axios from '../../../axios';
 import { AuthContext, defaultValueUser } from '../../../provider/AuthProvider';
 import { useTitle } from '../../../hooks/useTitle';
-import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { TypeUser } from '../../../types/user.type';
 import Layout from '../../layout/Layout';
@@ -11,21 +10,17 @@ import Layout from '../../layout/Layout';
 const LoginScreen = () => {
   useTitle("Авторизация");
 
-  const {user, setUser } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
   const [error, setError] = useState<string>('')
   const { register, handleSubmit, formState: { errors } } = useForm({
     defaultValues: defaultValueUser
   });
 
-  const submitForm = async (value: TypeUser) => {
+  const submitForm = async (userValue: TypeUser) => {
     try {
-      const { data } = await axios.post('ru/data/v3/testmethods/docs/login', value);
-      console.log(data)
+      const { data } = await axios.post('ru/data/v3/testmethods/docs/login', userValue);
       if (data.data) {
-        setUser({...user, user: true});
-        localStorage.setItem('token', data.data.token);
-        navigate('/');
+        login(data.data)
       } else {
         setError('Неправильный логин или пароль!')
       }
@@ -51,7 +46,7 @@ const LoginScreen = () => {
           <Typography component="h1" variant="h5">
             Авторизация
           </Typography>
-          <Box component="form" onSubmit={handleSubmit((data) => submitForm(data))} noValidate sx={{ mt: 1, width: '100%' }}>
+          <Box component="form" onSubmit={handleSubmit(submitForm)} noValidate sx={{ mt: 1, width: '100%' }}>
             <TextField
               {...register('username', {required: 'Это поле обязательное'})}
               margin="normal"

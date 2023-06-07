@@ -16,10 +16,12 @@ const Router = () => {
           {privateRoutes.map(({component, path}, i) => <Route path={path} element={component} key={i} />)}
           <Route path='*' element={<Navigate to='/'/>} />
         </Routes>
-      ) : <Routes>  
-        {publicRoutes.map(({component, path}, i) => <Route path={path} element={component} key={i} />)}
-        <Route path='*' element={<Navigate to='/welcome'/>} />
-      </Routes>
+      ) : (
+        <Routes>  
+          {publicRoutes.map(({component, path}, i) => <Route path={path} element={component} key={i} />)}
+          <Route path='*' element={<Navigate to='/welcome'/>} />
+        </Routes>
+      )
   )
 }
 
