@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, HashRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import './assets/index.css';
 import Router from './components/router/Router';
 import Notification from './components/ui/notification/Notification';
@@ -10,11 +10,11 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
-  <HashRouter>
+  <BrowserRouter>
     <AuthProvider>
       <Notification>
         <Router />
       </Notification>
     </AuthProvider>
-  </HashRouter>
+  </BrowserRouter>
 );
