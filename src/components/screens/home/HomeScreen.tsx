@@ -9,7 +9,7 @@ const HomeScreen = () => {
   
   return (
     <Layout>
-      <Typography component='h2' variant='h5' sx={{marginBottom: '15px'}}>Табличные данные</Typography>
+      <Typography variant='h5' sx={{marginBottom: '15px'}}>Табличные данные</Typography>
       <DataTable />
     </Layout>
   )

@@ -16,28 +16,37 @@ import {
   Stack,
   TextField,
   Tooltip,
-  MenuItem
+  MenuItem,
+  InputLabel,
+  FormControl
 } from '@mui/material';
 import { Delete, Edit, Add } from '@mui/icons-material';
 import { TypeTable } from '../../../types/table.type';
 import { TableService } from '../../../services/TableService';
 import { MRT_Localization_RU } from 'material-react-table/locales/ru';
-import { notifyError } from '../notification/Notification';
+import { notifyError, notifySuccess } from '../notification/Notification';
+import { ClassicSpinner } from "react-spinners-kit";
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 const arrStatus: string[] = ['Подписан', 'Не подписан'];
 const arrTypeDocument: string[] = ['Трудовой договор', 'Приказ о приеме', 'Деловое письмо'];
 
 const DataTable = () => {
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [tableData, setTableData] = useState<TypeTable[]>(() => []);
-  const [validationErrors, setValidationErrors] = useState<{
-    [cellId: string]: string;
-  }>({});
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [tableData, setTableData] = useState<TypeTable[]>([]);
 
   useEffect(() => {
     const getItems = async () => {
-      const { data } = await TableService.getAll();
-      setTableData(data.data)
+      setIsLoading(true);
+      try {
+        const { data } = await TableService.getAll();
+        setTableData(data.data);
+      } catch (error) {
+        notifyError('Ошибка при получении записей');
+      } finally {
+        setIsLoading(false);
+      }
     }
     getItems();
   }, [])
@@ -57,7 +66,8 @@ const DataTable = () => {
     async (row: MRT_Row<TypeTable>) => {
       try {
         await TableService.removeRow(row.original.id);
-        setTableData(tableData.filter((_, index) => index !== row.index)) 
+        setTableData(tableData.filter((_, index) => index !== row.index));
+        notifySuccess('Запись удалена');
       } catch (error) {
         notifyError('Ошибка при удалении записи');
       }
@@ -66,22 +76,16 @@ const DataTable = () => {
   );
 
   // Редактирование записи
-  const handleSaveRowEdits: MaterialReactTableProps<TypeTable>['onEditingRowSave'] =
-    async ({ exitEditingMode, row, values }) => {
-      if (!Object.keys(validationErrors).length) {
-        try {
-          await TableService.editRow(row.original.id, values);
-          tableData[row.index] = values;
-          setTableData([...tableData]);
-          exitEditingMode();
-        } catch (error) {
-          notifyError('Ошибка при редактировании записи');
-        }
-      }
-    };
-
-  const handleCancelRowEdits = () => {
-    setValidationErrors({});
+  const handleSaveRowEdits: MaterialReactTableProps<TypeTable>['onEditingRowSave'] = 
+  async ({ exitEditingMode, row, values }) => {
+    try {
+      await TableService.editRow(row.original.id, values);
+      tableData[row.index] = values;
+      setTableData([...tableData]);
+      exitEditingMode();
+    } catch (error) {
+      notifyError('Ошибка при редактировании записи');
+    }
   };
 
   const columns = useMemo<MRT_ColumnDef<TypeTable>[]>(
@@ -92,7 +96,7 @@ const DataTable = () => {
         size: 140,
         muiTableBodyCellEditTextFieldProps: () => ({
           disabled: true
-        }),
+        })
       },
       {
         accessorKey: 'companySignatureName',
@@ -153,48 +157,54 @@ const DataTable = () => {
   );
 
   return (
-    <>
-      <MaterialReactTable
-        columns={columns}
-        data={tableData}
-        editingMode="modal"
-        enableColumnOrdering
-        enableEditing
-        localization={MRT_Localization_RU}
-        onEditingRowSave={handleSaveRowEdits}
-        onEditingRowCancel={handleCancelRowEdits}
-        renderRowActions={({ row, table }) => (
-          <Box sx={{ display: 'flex', gap: '1rem' }}>
-            <Tooltip arrow placement="left" title="Редактировать">
-              <IconButton onClick={() => table.setEditingRow(row)}>
-                <Edit />
-              </IconButton>
-            </Tooltip>
-            <Tooltip arrow placement="right" title="Удалить">
-              <IconButton color="error" onClick={() => handleDeleteRow(row)}>
-                <Delete />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        )}
-        renderTopToolbarCustomActions={() => (
-          <Button
-            onClick={() => setCreateModalOpen(true)}
-            variant="contained"
-          >
-            <Add />
-          </Button>
-        )}
-      />
-      <CreateNewAccountModal
-        columns={columns}
-        open={createModalOpen}
-        onClose={() => setCreateModalOpen(false)}
-        onSubmit={handleCreateNewRow}
-      />
-    </>
-  );
+    <Box>
+      {isLoading ? 
+      <ClassicSpinner size={40} color='#000'/> 
+      : (
+      <>
+        <MaterialReactTable
+          columns={columns}
+          data={tableData}
+          editingMode="modal"
+          enableColumnOrdering
+          enableEditing
+          localization={MRT_Localization_RU}
+          onEditingRowSave={handleSaveRowEdits}
+          renderRowActions={({ row, table }) => (
+            <Box sx={{ display: 'flex', gap: '1rem' }}>
+              <Tooltip arrow placement="left" title="Редактировать">
+                <IconButton onClick={() =>  table.setEditingRow(row)}>
+                  <Edit />
+                </IconButton>
+              </Tooltip>
+              <Tooltip arrow placement="right" title="Удалить">
+                <IconButton color="error" onClick={() => handleDeleteRow(row)}>
+                  <Delete />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          )}
+          renderTopToolbarCustomActions={() => (
+            <Button
+              onClick={() => setCreateModalOpen(true)}
+              variant="contained"
+            >
+              <Add />
+            </Button>
+          )}
+        />
+        <CreateNewAccountModal
+          columns={columns}
+          open={createModalOpen}
+          onClose={() => setCreateModalOpen(false)}
+          onSubmit={handleCreateNewRow}
+        />
+      </>
+    )}
+    </Box>
+  )
 };
+
 
 interface CreateModalProps {
   columns: MRT_ColumnDef<TypeTable>[];
@@ -203,7 +213,6 @@ interface CreateModalProps {
   open: boolean;
 }
 
-//example of creating a mui dialog modal for creating new rows
 export const CreateNewAccountModal = ({
   open,
   columns,
@@ -226,7 +235,7 @@ export const CreateNewAccountModal = ({
   return (
     <Dialog open={open}>
       <DialogTitle textAlign="center">Новая запись</DialogTitle>
-      <DialogContent>
+      <DialogContent sx={{paddingTop: '10px !important'}}>
         <form onSubmit={(e) => e.preventDefault()}>
           <Stack
             sx={{
@@ -235,16 +244,38 @@ export const CreateNewAccountModal = ({
               gap: '1.5rem',
             }}
           >
-            {columns.map((column) => (
-              <TextField
-                key={column.accessorKey}
-                label={column.header}
-                name={column.accessorKey}
-                onChange={(e) =>
-                  setValues({ ...values, [e.target.name]: e.target.value })
-                }
-              />
-            ))}
+            {columns.map((column) => {
+              const columnKey = column.accessorKey;
+              const typeField = columnKey === 'documentType';
+              const statusField = columnKey === 'documentStatus';
+
+              return typeField || statusField ? (
+                <FormControl fullWidth key={column.accessorKey}>
+                  <InputLabel id={column.header}>{column.header}</InputLabel>
+                  <Select
+                    labelId={column.header}
+                    label={column.header}
+                    value={typeField ? values.documentType : values.documentStatus}
+                    name={column.accessorKey}
+                    onChange={(e: SelectChangeEvent) => setValues({ ...values, [e.target.name]: e.target.value })}
+                  >
+                    {
+                      statusField ? arrStatus.map(item => <MenuItem key={item} value={item}>{item}</MenuItem>) : 
+                      typeField ? arrTypeDocument.map(item => <MenuItem key={item} value={item}>{item}</MenuItem>) : null
+                    }
+                  </Select>
+                </FormControl>
+              ) : (
+                <TextField
+                  key={column.accessorKey}
+                  label={column.header}
+                  name={column.accessorKey}
+                  onChange={(e) =>
+                    setValues({ ...values, [e.target.name]: e.target.value })
+                  }
+                />
+              )
+            })}
           </Stack>
         </form>
       </DialogContent>
