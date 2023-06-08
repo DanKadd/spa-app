@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { FC } from 'react'
 import { useTitle } from '../../../hooks/useTitle'
 import Layout from '../../layout/Layout';
-import DataTable from '../../ui/table/Table';
+import DataTable from '../../table/Table';
 import { Typography } from '@mui/material';
 
-const HomeScreen = () => {
+const HomeScreen: FC = () => {
   useTitle("Главная");
   
   return (

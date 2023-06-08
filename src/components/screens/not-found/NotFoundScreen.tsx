@@ -1,11 +1,11 @@
-import React from 'react'
+import React, { FC } from 'react'
 import { useTitle } from '../../../hooks/useTitle';
 import Layout from '../../layout/Layout';
 import { Typography, Button } from '@mui/material'
 import style from './NotFound.module.scss'
 import { useNavigate } from 'react-router-dom';
 
-const NotFoundScreen = () => {
+const NotFoundScreen: FC = () => {
   useTitle("Страница не найдена");
   const navigate = useNavigate();
 

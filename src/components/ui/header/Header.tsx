@@ -11,7 +11,7 @@ const Header = () => {
     <header className={style.header}>
       <div className="container">
         <div className={style.header_box}>
-          <Button variant="contained" endIcon={<LogoutIcon />} onClick={logout}>Выйти</Button>
+          <Button variant="contained" onClick={logout}><LogoutIcon /></Button>
         </div>  
       </div>
     </header>

@@ -38,8 +38,8 @@ const AuthProvider: FC<PropsWithChildren<unknown>> = ({children}) => {
   }
 
   const login = (data: TypeTokenUser) => {
-    setUser({...user, user: true});
     localStorage.setItem('token', data.token);
+    setUser({...user, user: true});
     navigate('/');
   }
 

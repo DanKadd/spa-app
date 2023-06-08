@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, FC } from 'react'
 import {Box, Button, Container, TextField, Typography} from '@mui/material';
 import axios from '../../../axios';
 import { AuthContext, defaultValueUser } from '../../../provider/AuthProvider';
@@ -7,11 +7,10 @@ import { useForm } from 'react-hook-form';
 import { TypeUser } from '../../../types/user.type';
 import Layout from '../../layout/Layout';
 
-const LoginScreen = () => {
+const LoginScreen: FC = () => {
   useTitle("Авторизация");
-
   const { login } = useContext(AuthContext);
-  const [error, setError] = useState<string>('')
+  const [errorText, setErrorText] = useState<string>('')
   const { register, handleSubmit, formState: { errors } } = useForm({
     defaultValues: defaultValueUser
   });
@@ -22,10 +21,10 @@ const LoginScreen = () => {
       if (data.data) {
         login(data.data)
       } else {
-        setError('Неправильный логин или пароль!')
+        setErrorText('Неправильный логин или пароль')
       }
     } catch (error) {
-      console.log("Ошибка запроса")
+      setErrorText('Произошла ошибка при авторизации')
     }
   }
   return (
@@ -67,7 +66,7 @@ const LoginScreen = () => {
               id="password"
             />
             <p>{errors.password?.message}</p>
-            <p>{error}</p>
+            <p>{errorText}</p>
             <Button
               type="submit"
               fullWidth

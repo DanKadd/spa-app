@@ -1,11 +1,11 @@
-import React from 'react'
+import React, { FC } from 'react'
 import style from './Welcome.module.scss';
 import { Typography, Button } from '@mui/material'
 import { useNavigate } from 'react-router-dom';
 import Layout from '../../layout/Layout';
 import { useTitle } from '../../../hooks/useTitle';
 
-const WelcomeScreen = () => {
+const WelcomeScreen: FC = () => {
   useTitle("Приветствие");
   const navigate = useNavigate();
   return (

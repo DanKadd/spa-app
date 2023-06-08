@@ -21,10 +21,10 @@ import {
   FormControl
 } from '@mui/material';
 import { Delete, Edit, Add } from '@mui/icons-material';
-import { TypeTable } from '../../../types/table.type';
-import { TableService } from '../../../services/TableService';
+import { TypeTable } from '../../types/table.type';
+import { tableService } from '../../services/tableService';
 import { MRT_Localization_RU } from 'material-react-table/locales/ru';
-import { notifyError, notifySuccess } from '../notification/Notification';
+import { notifyError, notifySuccess } from '../ui/notification/Notification';
 import { ClassicSpinner } from "react-spinners-kit";
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 
@@ -35,12 +35,13 @@ const DataTable = () => {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [tableData, setTableData] = useState<TypeTable[]>([]);
+  const [actionCount, setActionCount] = useState<number>(0);
 
   useEffect(() => {
     const getItems = async () => {
       setIsLoading(true);
       try {
-        const { data } = await TableService.getAll();
+        const { data } = await tableService.getAll();
         setTableData(data.data);
       } catch (error) {
         notifyError('Ошибка при получении записей');
@@ -49,13 +50,15 @@ const DataTable = () => {
       }
     }
     getItems();
-  }, [])
+  }, [actionCount])
 
   // Создание новой записи
   const handleCreateNewRow = async (values: TypeTable) => {
     try {
-      await TableService.addRow(values);
+      await tableService.addRow(values);
       setTableData([...tableData, values]);
+      notifySuccess('Запись создана');
+      setActionCount(prev => prev + 1);
     } catch (error) {
       notifyError('Ошибка при добавлении записи');
     }
@@ -65,9 +68,10 @@ const DataTable = () => {
   const handleDeleteRow = useCallback(
     async (row: MRT_Row<TypeTable>) => {
       try {
-        await TableService.removeRow(row.original.id);
+        await tableService.removeRow(row.original.id);
         setTableData(tableData.filter((_, index) => index !== row.index));
         notifySuccess('Запись удалена');
+        setActionCount(prev => prev + 1);
       } catch (error) {
         notifyError('Ошибка при удалении записи');
       }
@@ -79,10 +83,12 @@ const DataTable = () => {
   const handleSaveRowEdits: MaterialReactTableProps<TypeTable>['onEditingRowSave'] = 
   async ({ exitEditingMode, row, values }) => {
     try {
-      await TableService.editRow(row.original.id, values);
+      await tableService.editRow(row.original.id, values);
       tableData[row.index] = values;
       setTableData([...tableData]);
       exitEditingMode();
+      notifySuccess('Запись изменена');
+      setActionCount(prev => prev + 1);
     } catch (error) {
       notifyError('Ошибка при редактировании записи');
     }
@@ -124,7 +130,7 @@ const DataTable = () => {
       {
         accessorKey: 'documentStatus',
         header: 'Статус',
-        size: 140,
+        size: 100,
         muiTableBodyCellEditTextFieldProps: {
           select: true,
           children: arrStatus.map((state) => (
@@ -268,8 +274,9 @@ export const CreateNewAccountModal = ({
               ) : (
                 <TextField
                   key={column.accessorKey}
-                  label={column.header}
+                  label={columnKey === 'companySigDate' || columnKey === 'employeeSigDate' ? '' : column.header}
                   name={column.accessorKey}
+                  type={columnKey === 'companySigDate' || columnKey === 'employeeSigDate' ? 'date' : ''}
                   onChange={(e) =>
                     setValues({ ...values, [e.target.name]: e.target.value })
                   }

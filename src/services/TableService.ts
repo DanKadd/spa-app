@@ -1,10 +1,10 @@
 import axios from '../axios'
 import { TypeTable } from '../types/table.type'
 
-export const TableService = {
+export const tableService = {
   async getAll() {
     const { data } = await axios.get(`${process.env.REACT_APP_URI}ru/data/v3/testmethods/docs/userdocs/get`);
-    return { data }
+    return { data };
   },
 
   async addRow(value: TypeTable) {

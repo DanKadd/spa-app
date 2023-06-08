@@ -1,4 +1,4 @@
 
-export const isAuth = () => {
+export const isAuth = (): boolean  => {
   return Boolean(localStorage.getItem('token'));
 }
