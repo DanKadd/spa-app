@@ -34,7 +34,7 @@ const arrTypeDocument: string[] = ['Трудовой договор', 'Прик�
 const DataTable = () => {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [tableData, setTableData] = useState<TypeTable[]>([]);
+  const [tableData, setTableData] = useState<TypeTable[]>(() => []);
   const [actionCount, setActionCount] = useState<number>(0);
 
   useEffect(() => {
@@ -42,7 +42,7 @@ const DataTable = () => {
       setIsLoading(true);
       try {
         const { data } = await tableService.getAll();
-        setTableData(data.data);
+        setTableData(data);
       } catch (error) {
         notifyError('Ошибка при получении записей');
       } finally {
@@ -50,7 +50,7 @@ const DataTable = () => {
       }
     }
     getItems();
-  }, [actionCount])
+  }, [actionCount, setTableData])
 
   // Создание новой записи
   const handleCreateNewRow = async (values: TypeTable) => {

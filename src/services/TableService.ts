@@ -3,8 +3,12 @@ import { TypeTable } from '../types/table.type'
 
 export const tableService = {
   async getAll() {
-    const { data } = await axios.get(`${process.env.REACT_APP_URI}ru/data/v3/testmethods/docs/userdocs/get`);
-    return { data };
+    const { data } = await axios.get(`${process.env.REACT_APP_URI}ru/data/v3/testmethods/docs/userdocs/get`, {
+      headers: {
+        'x-auth': localStorage.getItem('token')
+      }
+    });
+    return data;
   },
 
   async addRow(value: TypeTable) {
