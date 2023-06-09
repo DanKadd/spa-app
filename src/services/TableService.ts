@@ -12,17 +12,29 @@ export const tableService = {
   },
 
   async addRow(value: TypeTable) {
-    const { data } = await axios.post(`${process.env.REACT_APP_URI}ru/data/v3/testmethods/docs/userdocs/create`, value);
+    const { data } = await axios.post(`${process.env.REACT_APP_URI}ru/data/v3/testmethods/docs/userdocs/create`, value, {
+      headers: {
+        'x-auth': localStorage.getItem('token')
+      }
+    });
     return { data }
   },
   
   async editRow(id: string, value: TypeTable) {
-    const { data } = await axios.post(`${process.env.REACT_APP_URI}ru/data/v3/testmethods/docs/userdocs/set/${id}`, value);
+    const { data } = await axios.post(`${process.env.REACT_APP_URI}ru/data/v3/testmethods/docs/userdocs/set/${id}`, value, {
+      headers: {
+        'x-auth': localStorage.getItem('token')
+      }
+    });
     return { data }
   },
 
   async removeRow(id: string) {
-    const { data } = await axios.delete(`${process.env.REACT_APP_URI}ru/data/v3/testmethods/docs/userdocs/delete/${id}`);
+    const { data } = await axios.delete(`${process.env.REACT_APP_URI}ru/data/v3/testmethods/docs/userdocs/delete/${id}`, {
+      headers: {
+        'x-auth': localStorage.getItem('token')
+      }
+    });
     return { data }
   }
 }
