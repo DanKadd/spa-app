@@ -22,7 +22,7 @@ import {
 } from '@mui/material';
 import { Delete, Edit, Add } from '@mui/icons-material';
 import { TypeTable } from '../../types/table.type';
-import { tableService } from '../../services/tableService';
+import { tableService } from '../../services/TableService';
 import { MRT_Localization_RU } from 'material-react-table/locales/ru';
 import { notifyError, notifySuccess } from '../ui/notification/Notification';
 import { ClassicSpinner } from "react-spinners-kit";
