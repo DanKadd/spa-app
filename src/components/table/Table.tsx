@@ -27,6 +27,8 @@ import { MRT_Localization_RU } from 'material-react-table/locales/ru';
 import { notifyError, notifySuccess } from '../ui/notification/Notification';
 import { ClassicSpinner } from "react-spinners-kit";
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { DatePicker } from '@mui/x-date-pickers';
+import dayjs, { Dayjs } from 'dayjs';
 
 const arrStatus: string[] = ['Подписан', 'Не подписан'];
 const arrTypeDocument: string[] = ['Трудовой договор', 'Приказ о приеме', 'Деловое письмо'];
@@ -82,6 +84,7 @@ const DataTable = () => {
   // Редактирование записи
   const handleSaveRowEdits: MaterialReactTableProps<TypeTable>['onEditingRowSave'] = 
   async ({ exitEditingMode, row, values }) => {
+    
     try {
       await tableService.editRow(row.original.id, values);
       tableData[row.index] = values;
@@ -100,9 +103,6 @@ const DataTable = () => {
         accessorKey: 'companySigDate',
         header: 'Дата 1',
         size: 140,
-        muiTableBodyCellEditTextFieldProps: () => ({
-          disabled: true
-        })
       },
       {
         accessorKey: 'companySignatureName',
@@ -149,9 +149,23 @@ const DataTable = () => {
         accessorKey: 'employeeSigDate',
         header: 'Дата 2',
         size: 140,
-        muiTableBodyCellEditTextFieldProps: () => ({
-          disabled: true
-        }),
+        Edit: ({row, column, table}) => {
+          const { editingRow } = table.getState();
+          const onChangeCell = (value: Dayjs) => {
+            if (!editingRow) return;
+            table.setEditingRow({
+              ...editingRow,
+              _valuesCache: { ...editingRow._valuesCache, [column.id]: value.toISOString() },
+            })
+          }
+          return (
+            <DatePicker 
+              label={column.columnDef.header} 
+              defaultValue={dayjs(row.original.employeeSigDate)} 
+              onChange={(value) => onChangeCell(value!)} 
+            />
+          )
+        }
       },
       {
         accessorKey: 'employeeSignatureName',
